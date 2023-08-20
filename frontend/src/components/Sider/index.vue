@@ -1,9 +1,10 @@
 <script setup>
 import { SettingsSharp, ReloadSharp } from "@vicons/ionicons5";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import mitt from "@/utils/mitt.js";
 import { ipcApiRoute } from "@/api/main";
 import { ipc } from "@/utils/ipcRenderer";
+import UserConfig from "../UserConfig/index.vue";
 
 // user
 const userState = ref({ username: "", ip: "" });
@@ -24,10 +25,18 @@ const activeDevice = computed(() => {
   return devices.value.find((el) => el.active) || null;
 });
 
+watch(activeDevice, () => {
+  mitt.emit("updateActiveDevice", activeDevice.value);
+});
+
 onMounted(async () => {
   ipc.removeAllListeners(ipcApiRoute.getDevices);
   ipc.on(ipcApiRoute.getDevices, (_, result) => {
-    devices.value = result
+    devices.value = result.map((el) => ({
+      ...el,
+      active: activeDevice.value?.id === el.id,
+      count: 0,
+    }));
   });
 
   await publish();
@@ -49,8 +58,24 @@ function handleDeviceClick(index) {
     devices.value.forEach((el) => (el.active = false));
     devices.value[index].active = true;
   }
+}
 
-  mitt.emit("updateActiveDevice", activeDevice.value);
+// userconfig
+
+const userConfigRef = ref(null);
+
+function openUserConfig() {
+  userConfigRef.value.openUserConfig(userState.value);
+}
+
+async function handleSave(userInfo) {
+  await ipc.invoke(ipcApiRoute.updateUserInfo, {
+    id: userInfo.id,
+    username: userInfo.username,
+    port: userInfo.port
+  });
+
+  await getUserInfo();
 }
 </script>
 
@@ -67,7 +92,7 @@ function handleDeviceClick(index) {
         </template>
         <template #action>
           <n-space>
-            <n-button size="small">
+            <n-button size="small" @click="openUserConfig">
               <template #icon>
                 <n-icon>
                   <settings-sharp />
@@ -87,6 +112,7 @@ function handleDeviceClick(index) {
         </template>
       </n-thing>
     </div>
+    <UserConfig ref="userConfigRef" @save="handleSave"></UserConfig>
     <div class="h-list bg-slate-800">
       <n-scrollbar style="max-height: 100%" v-if="devices.length > 0">
         <n-list clickable class="bg-slate-700">

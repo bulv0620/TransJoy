@@ -13,7 +13,7 @@ jdb.db
     user: {
       id: v4(),
       username: v4().split('-')[0].toUpperCase(),
-      port: "44944",
+      port: 44944,
     },
   })
   .write();

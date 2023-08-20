@@ -13,7 +13,8 @@ class UserService extends Service {
   }
 
   updateUserInfo(user) {
-    return db.set("user", user).write();
+    db.set("user", user).write()
+    return db.get("user").value();
   }
 }
 
