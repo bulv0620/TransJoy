@@ -46,9 +46,9 @@ module.exports = (appInfo) => {
   config.windowsOption = {
     title: 'EE框架',
     width: 800,
-    height: 560,
+    height: 552,
     minWidth: 800,
-    minHeight: 560,
+    minHeight: 552,
     webPreferences: {
       //webSecurity: false, // 跨域问题 -> 打开注释
       contextIsolation: false, // false -> 可在渲染进程中使用electron的api，true->需要bridge.js(contextBridge)
