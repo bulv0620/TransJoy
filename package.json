@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "bonjour": "^3.5.0",
-    "dayjs": "^1.10.7",
+    "dayjs": "^1.11.9",
     "ee-core": "^2.4.0",
     "electron-updater": "^5.3.0",
     "lodash": "^4.17.21",

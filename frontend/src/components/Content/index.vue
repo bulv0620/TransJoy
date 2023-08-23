@@ -3,6 +3,9 @@ import { nextTick, onMounted, ref } from "vue";
 import mitt from "@/utils/mitt.js";
 import { ipcApiRoute } from "@/api/main";
 import { ipc } from "@/utils/ipcRenderer";
+import { useMessage } from "naive-ui";
+
+const message = useMessage();
 
 const activeDevice = ref(null);
 
@@ -13,7 +16,7 @@ onMounted(() => {
     if (JSON.stringify(device) !== "{}") {
       msgList.value = [];
 
-      getMessages(device);
+      await getMessages(device);
 
       activeDevice.value = device;
       scrollToBottom();
@@ -30,7 +33,7 @@ onMounted(() => {
 });
 
 async function getMessages(device) {
-  const list = await ipc.invoke(ipcApiRoute.queryMessage, {...device});
+  const list = await ipc.invoke(ipcApiRoute.queryMessage, { ...device });
   msgList.value = list || [];
 }
 
@@ -45,20 +48,29 @@ function scrollToBottom() {
 
 // send message
 const content = ref("");
-
+const loading = ref(false);
 async function sendMessage() {
-  const success = await ipc.invoke(ipcApiRoute.sendMessage, {
-    target: { ...activeDevice.value },
-    type: "msg",
-    content: content.value,
-  });
+  loading.value = true;
 
-  if (success) {
-    getMessages(activeDevice.value)
-    scrollToBottom()
-  }
-  else {
+  try {
+    const success = await ipc.invoke(ipcApiRoute.sendMessage, {
+      target: { ...activeDevice.value },
+      type: "msg",
+      content: content.value,
+    });
 
+    if (success) {
+      await getMessages(activeDevice.value);
+      scrollToBottom();
+    } else {
+      message.error("发送失败");
+    }
+  } catch (error) {
+    message.error("发送失败");
+    console.warn(error);
+  } finally {
+    content.value = "";
+    loading.value = false;
   }
 }
 </script>
@@ -92,7 +104,12 @@ async function sendMessage() {
         </n-scrollbar>
       </div>
       <div class="bg-slate-600 p-1 absolute w-full bottom-0">
-        <n-input v-model="content" @keypress.enter.native="sendMessage"></n-input>
+        <n-input
+          :disabled="loading"
+          :loading="loading"
+          v-model:value="content"
+          @keypress.enter.native="sendMessage"
+        ></n-input>
       </div>
     </div>
     <div v-else class="w-full h-full flex items-center justify-center">

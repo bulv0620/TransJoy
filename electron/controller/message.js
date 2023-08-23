@@ -5,6 +5,7 @@ const Services = require("ee-core/services");
 const EE = require("ee-core/ee");
 const HttpClient = require("ee-core/httpclient");
 const { v4 } = require("uuid");
+const dayjs = require('dayjs')
 
 /**
  * framework
@@ -39,6 +40,7 @@ class MessageController extends Controller {
   }
 
   async send({ target, type, content }) {
+    console.log(target, type, content);
     try {
       const userInfo = Services.get("user").getUserInfo();
 
@@ -48,7 +50,7 @@ class MessageController extends Controller {
         deviceId: userInfo.id,
         type,
         content,
-        timestamp: new Date(),
+        timestamp: dayjs().format('YYYY-MM-DD HH:mm:ss'),
       };
       const options = {
         method: "POST",
@@ -58,9 +60,14 @@ class MessageController extends Controller {
       };
       await this.hc.request(url, options);
 
-      Services.get("message").saveMessage({ ...data, self: true });
+      Services.get("message").saveMessage({
+        ...data,
+        self: true,
+        deviceId: target.id,
+      });
       return true;
     } catch (error) {
+      // console.log(error);
       return false;
     }
   }
