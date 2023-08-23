@@ -103,7 +103,7 @@ async function sendMessage() {
           >
             <div :class="msg.self ? 'float-right text-right' : 'float-left'">
               <p
-                class="p-2 max-w-xs break-all bg-slate-500 rounded-md inline-block"
+                class="p-2 max-w-xs break-all bg-slate-500 rounded-md inline-block text-left"
               >
                 <span>{{ msg.content }}</span>
               </p>
