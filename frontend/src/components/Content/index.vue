@@ -47,6 +47,7 @@ function scrollToBottom() {
 }
 
 // send message
+const inputRef = ref(null);
 const content = ref("");
 const loading = ref(false);
 async function sendMessage() {
@@ -71,6 +72,10 @@ async function sendMessage() {
   } finally {
     content.value = "";
     loading.value = false;
+
+    nextTick(() => {
+      inputRef.value.focus();
+    })
   }
 }
 </script>
@@ -91,7 +96,11 @@ async function sendMessage() {
       </div>
       <div class="h-content bg-gradient-to-b from-slate-800 overflow-auto">
         <n-scrollbar class="h-full scroll-content px-4">
-          <div v-for="msg in msgList" class="overflow-hidden my-2">
+          <div
+            v-for="msg in msgList"
+            :key="msg.id"
+            class="overflow-hidden my-2"
+          >
             <div :class="msg.self ? 'float-right text-right' : 'float-left'">
               <p
                 class="p-2 max-w-xs break-all bg-slate-500 rounded-md inline-block"
@@ -105,6 +114,7 @@ async function sendMessage() {
       </div>
       <div class="bg-slate-600 p-1 absolute w-full bottom-0">
         <n-input
+          ref="inputRef"
           :disabled="loading"
           :loading="loading"
           v-model:value="content"

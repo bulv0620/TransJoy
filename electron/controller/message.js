@@ -40,7 +40,6 @@ class MessageController extends Controller {
   }
 
   async send({ target, type, content }) {
-    console.log(target, type, content);
     try {
       const userInfo = Services.get("user").getUserInfo();
 
