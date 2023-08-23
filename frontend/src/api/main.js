@@ -11,9 +11,14 @@ const ipcApiRoute = {
   getUserInfo: "controller.user.getUserInfo",
   updateUserInfo: "controller.user.updateUserInfo",
 
-  //device
-  getDevices: "controller.device.getDevices",
+  // device
+  subscribeDeviceServe: "controller.device.subscribe",
   publish: "controller.device.publish",
+
+  // message
+  subscribeMessageServe: "controller.message.subscribe",
+  queryMessage: "controller.message.query",
+  sendMessage: "controller.message.send"
 };
 
 export { ipcApiRoute };

@@ -13,10 +13,10 @@ class DeviceController extends Controller {
 
   }
 
-  getDevices(_, event) {
+  subscribe(_, event) {
     const userInfo = Services.get("user").getUserInfo();
 
-    return Services.get("bonjour").getDevices(userInfo, event);
+    return Services.get("bonjour").subscribe(userInfo, event);
   }
 
   publish() {

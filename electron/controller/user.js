@@ -2,7 +2,7 @@
 
 const { Controller } = require("ee-core");
 const Services = require("ee-core/services");
-
+const { app } = require('electron')
 /**
  * framework
  * @class
@@ -18,8 +18,9 @@ class UserController extends Controller {
 
   updateUserInfo(args) {
     const userInfo = Services.get("user").updateUserInfo(args);
-
-    Services.get("bonjour").publish(userInfo);
+    Services.get("bonjour").unpublishAll();
+    app.relaunch();
+    app.exit(0)
     return userInfo;
   }
 }

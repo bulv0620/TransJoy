@@ -1,4 +1,5 @@
 const { Application } = require('ee-core');
+const Services = require("ee-core/services");
 
 class Index extends Application {
 
@@ -41,7 +42,7 @@ class Index extends Application {
    */  
   async beforeClose () {
     // do some things
-
+    Services.get("bonjour").unpublishAll()
   }
 }
 

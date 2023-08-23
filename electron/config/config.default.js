@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const { db } = require("../utils/db");
 
 /**
  * 默认配置
@@ -104,13 +105,13 @@ module.exports = (appInfo) => {
    * 内置http服务
    */     
   config.httpServer = {
-    enable: false,
+    enable: true,
     https: {
       enable: false, 
       key: '/public/ssl/localhost+1.key',
       cert: '/public/ssl/localhost+1.pem'
     },
-    port: 7071,
+    port: db.get("user.port").value(),
     cors: {
       origin: "*"
     },

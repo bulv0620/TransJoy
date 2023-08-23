@@ -21,8 +21,8 @@ class BonjourService extends Service {
     });
   }
 
-  getDevices(userInfo, event) {
-    const channel = "controller.device.getDevices";
+  subscribe(userInfo, event) {
+    const channel = "controller.device.subscribe";
 
     const replyFn = () => {
       const devices = this.browser.services

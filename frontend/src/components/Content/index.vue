@@ -1,14 +1,66 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { nextTick, onMounted, ref } from "vue";
 import mitt from "@/utils/mitt.js";
+import { ipcApiRoute } from "@/api/main";
+import { ipc } from "@/utils/ipcRenderer";
 
 const activeDevice = ref(null);
 
+const msgList = ref([]);
+
 onMounted(() => {
-  mitt.on("updateActiveDevice", (e) => {
-    activeDevice.value = e;
+  mitt.on("updateActiveDevice", async (device) => {
+    if (JSON.stringify(device) !== "{}") {
+      msgList.value = [];
+
+      getMessages(device);
+
+      activeDevice.value = device;
+      scrollToBottom();
+    } else {
+      activeDevice.value = null;
+    }
+  });
+
+  mitt.on("newMessage", (msg) => {
+    msgList.value.push(msg);
+
+    scrollToBottom();
   });
 });
+
+async function getMessages(device) {
+  const list = await ipc.invoke(ipcApiRoute.queryMessage, {...device});
+  msgList.value = list || [];
+}
+
+function scrollToBottom() {
+  nextTick(() => {
+    const scrollContent = document.querySelector(
+      ".scroll-content .n-scrollbar-container"
+    );
+    scrollContent.scrollTo(0, scrollContent.scrollHeight);
+  });
+}
+
+// send message
+const content = ref("");
+
+async function sendMessage() {
+  const success = await ipc.invoke(ipcApiRoute.sendMessage, {
+    target: { ...activeDevice.value },
+    type: "msg",
+    content: content.value,
+  });
+
+  if (success) {
+    getMessages(activeDevice.value)
+    scrollToBottom()
+  }
+  else {
+
+  }
+}
 </script>
 
 <template>
@@ -25,14 +77,26 @@ onMounted(() => {
           </template>
         </n-thing>
       </div>
-      <div class="h-content bg-gradient-to-b from-slate-800"></div>
+      <div class="h-content bg-gradient-to-b from-slate-800 overflow-auto">
+        <n-scrollbar class="h-full scroll-content px-4">
+          <div v-for="msg in msgList" class="overflow-hidden my-2">
+            <div :class="msg.self ? 'float-right text-right' : 'float-left'">
+              <p
+                class="p-2 max-w-xs break-all bg-slate-500 rounded-md inline-block"
+              >
+                <span>{{ msg.content }}</span>
+              </p>
+              <p class="text-xs text-gray-400">{{ msg.timestamp }}</p>
+            </div>
+          </div>
+        </n-scrollbar>
+      </div>
       <div class="bg-slate-600 p-1 absolute w-full bottom-0">
-        <n-input></n-input>
+        <n-input v-model="content" @keypress.enter.native="sendMessage"></n-input>
       </div>
     </div>
     <div v-else class="w-full h-full flex items-center justify-center">
-      <n-empty description="Select a Device">
-      </n-empty>
+      <n-empty description="Select a Device"> </n-empty>
     </div>
   </div>
 </template>

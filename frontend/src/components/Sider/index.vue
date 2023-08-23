@@ -26,12 +26,12 @@ const activeDevice = computed(() => {
 });
 
 watch(activeDevice, () => {
-  mitt.emit("updateActiveDevice", activeDevice.value);
+  mitt.emit("updateActiveDevice", {...activeDevice.value});
 });
 
 onMounted(async () => {
-  ipc.removeAllListeners(ipcApiRoute.getDevices);
-  ipc.on(ipcApiRoute.getDevices, (_, result) => {
+  ipc.removeAllListeners(ipcApiRoute.subscribeDeviceServe);
+  ipc.on(ipcApiRoute.subscribeDeviceServe, (_, result) => {
     devices.value = result.map((el) => ({
       ...el,
       active: activeDevice.value?.id === el.id,
@@ -40,18 +40,19 @@ onMounted(async () => {
   });
 
   await publish();
-  await getDevices();
+  await subscribeDeviceServe();
 });
 
 async function publish() {
   await ipc.invoke(ipcApiRoute.publish);
 }
 
-async function getDevices() {
-  await ipc.send(ipcApiRoute.getDevices);
+async function subscribeDeviceServe() {
+  await ipc.send(ipcApiRoute.subscribeDeviceServe);
 }
 
 function handleDeviceClick(index) {
+  devices.value[index].count = 0
   if (devices.value[index].active) {
     devices.value[index].active = false;
   } else {
@@ -61,7 +62,6 @@ function handleDeviceClick(index) {
 }
 
 // userconfig
-
 const userConfigRef = ref(null);
 
 function openUserConfig() {
@@ -72,10 +72,39 @@ async function handleSave(userInfo) {
   await ipc.invoke(ipcApiRoute.updateUserInfo, {
     id: userInfo.id,
     username: userInfo.username,
-    port: userInfo.port
+    port: userInfo.port,
   });
 
   await getUserInfo();
+}
+
+// message
+onMounted(async () => {
+  ipc.removeAllListeners(ipcApiRoute.subscribeMessageServe);
+  ipc.on(ipcApiRoute.subscribeMessageServe, (_, result) => {
+    if (result) {
+      if(activeDevice.value?.id === result.deviceId) {
+        // push to content
+        mitt.emit("newMessage", result);
+        return 
+      }
+
+      const sourceDevice = devices.value.find(
+        (device) => device.id === result.deviceId
+      );
+      if (sourceDevice) {
+        typeof sourceDevice.count === "number"
+          ? sourceDevice.count++
+          : (sourceDevice.count = 1);
+      }
+    }
+  });
+
+  await subscribeMessageServe();
+});
+
+async function subscribeMessageServe() {
+  await ipc.send(ipcApiRoute.subscribeMessageServe);
 }
 </script>
 
@@ -126,7 +155,9 @@ async function handleSave(userInfo) {
           >
             <n-thing class="pl-4">
               <template #avatar>
-                <n-avatar round>{{ device.username }}</n-avatar>
+                <n-badge :value="device.count" :max="99" type="info">
+                  <n-avatar round>{{ device.username }}</n-avatar>
+                </n-badge>
               </template>
               <template #header>{{ device.username }}</template>
               <template #description>
