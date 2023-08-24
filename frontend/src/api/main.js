@@ -18,7 +18,8 @@ const ipcApiRoute = {
   // message
   subscribeMessageServe: "controller.message.subscribe",
   queryMessage: "controller.message.query",
-  sendMessage: "controller.message.send"
+  sendMessage: "controller.message.send",
+  removeMessage: "controller.message.remove"
 };
 
 export { ipcApiRoute };

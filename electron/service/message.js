@@ -36,6 +36,10 @@ class MessageService extends Service {
   query(id) {
     return db.get('devices.' + id).value()
   }
+
+  removeMessage(deviceId, messageId) {
+    return db.get(`devices[${deviceId}]`).remove({id: messageId}).write()
+  }
 }
 
 MessageService.toString = () => "[class MessageService]";

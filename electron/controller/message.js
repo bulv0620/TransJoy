@@ -5,7 +5,9 @@ const Services = require("ee-core/services");
 const EE = require("ee-core/ee");
 const HttpClient = require("ee-core/httpclient");
 const { v4 } = require("uuid");
-const dayjs = require('dayjs')
+const dayjs = require("dayjs");
+const path = require("path");
+const fs = require("fs");
 
 /**
  * framework
@@ -49,7 +51,7 @@ class MessageController extends Controller {
         deviceId: userInfo.id,
         type,
         content,
-        timestamp: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        timestamp: dayjs().format("YYYY-MM-DD HH:mm"),
       };
       const options = {
         method: "POST",
@@ -71,7 +73,7 @@ class MessageController extends Controller {
     }
   }
 
-  download() {
+  async download() {
     const { CoreApp } = EE;
 
     let params = CoreApp.request.query;
@@ -79,7 +81,18 @@ class MessageController extends Controller {
     params =
       params instanceof Object ? params : JSON.parse(JSON.stringify(params));
 
-    return params;
+    const ctx = CoreApp.request.ctx;
+
+    const createReadStream = fs.createReadStream(path.resolve(params.path));
+    ctx.set("Content-disposition", "attachment; filename=" + params.name);
+    ctx.set("Content-type", params.type);
+    ctx.set("Content-Length", params.size);
+    return createReadStream;
+  }
+
+  remove({deviceId, messageId}) {
+    Services.get("message").removeMessage(deviceId, messageId)
+    return 
   }
 }
 

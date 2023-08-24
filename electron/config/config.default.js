@@ -47,7 +47,7 @@ module.exports = (appInfo) => {
   config.windowsOption = {
     title: 'EE框架',
     width: 800,
-    height: 552,
+    height: 620,
     minWidth: 800,
     minHeight: 552,
     webPreferences: {
