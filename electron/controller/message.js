@@ -32,7 +32,7 @@ class MessageController extends Controller {
 
     const body = CoreApp.request.body;
 
-    if (content.type === "file") {
+    if (body.type === "file") {
       body.content = JSON.parse(body.content);
     }
 
