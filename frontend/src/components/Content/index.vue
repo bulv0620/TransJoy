@@ -25,9 +25,9 @@ onMounted(() => {
     if (JSON.stringify(device) !== "{}") {
       msgList.value = [];
 
-      await getMessages(device);
-
       activeDevice.value = device;
+
+      await getMessages(device);
     } else {
       activeDevice.value = null;
     }
@@ -204,7 +204,7 @@ async function handleRemoveMessage(deviceId, messageId) {
                 <n-image
                   v-if="isImg(msg.content.fileName)"
                   class="align-middle"
-                  :src="`http://${activeDevice.ip}:${activeDevice.port}/controller/message/download?path=${msg.content.filePath}&name=${msg.content.fileName}&size=${msg.content.fileSize}&type=${msg.content.fileType}`"
+                  :src="`http://${msg.self ? 'localhost' : activeDevice.ip}:${activeDevice.port}/controller/message/download?path=${msg.content.filePath}&name=${msg.content.fileName}&size=${msg.content.fileSize}&type=${msg.content.fileType}`"
                   style="max-width: 300px"
                   @load="scrollToBottom"
                 ></n-image>
@@ -215,7 +215,7 @@ async function handleRemoveMessage(deviceId, messageId) {
                   @loadeddata="scrollToBottom"
                 >
                   <source
-                    :src="`http://${activeDevice.ip}:${activeDevice.port}/controller/message/download?path=${msg.content.filePath}&name=${msg.content.fileName}&size=${msg.content.fileSize}&type=${msg.content.fileType}`"
+                    :src="`http://${msg.self ? 'localhost' : activeDevice.ip}:${activeDevice.port}/controller/message/download?path=${msg.content.filePath}&name=${msg.content.fileName}&size=${msg.content.fileSize}&type=${msg.content.fileType}`"
                     :type="msg.content.fileType"
                   />
                 </video>
