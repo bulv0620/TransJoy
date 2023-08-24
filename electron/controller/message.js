@@ -32,10 +32,6 @@ class MessageController extends Controller {
 
     const body = CoreApp.request.body;
 
-    if (body.type === "file") {
-      body.content = JSON.parse(body.content);
-    }
-
     Services.get("message").saveMessage(body);
 
     Services.get("message").getMessage(body);
