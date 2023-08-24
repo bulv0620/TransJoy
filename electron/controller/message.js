@@ -50,7 +50,7 @@ class MessageController extends Controller {
         id: v4(),
         deviceId: userInfo.id,
         type,
-        content: content.type === "msg" ? content : JSON.stringify(content),
+        content: type === "msg" ? content : JSON.stringify(content),
         timestamp: dayjs().format("YYYY-MM-DD HH:mm"),
       };
       const options = {
