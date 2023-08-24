@@ -21,24 +21,29 @@ class MessageService extends Service {
   }
 
   saveMessage(msg) {
-    const { deviceId } = msg;
+    const { deviceId, type } = msg;
 
-    const deviceSavedMsg = db.get('devices.' + deviceId).value()
-
-    if(!deviceSavedMsg) {
-      db.set('devices.' + deviceId, [msg]).write()
+    if (type === "file") {
+      msg.content = JSON.parse(msg.content);
     }
-    else {
-      db.get('devices.'+ deviceId).push(msg).write()
+
+    const deviceSavedMsg = db.get("devices." + deviceId).value();
+
+    if (!deviceSavedMsg) {
+      db.set("devices." + deviceId, [msg]).write();
+    } else {
+      db.get("devices." + deviceId)
+        .push(msg)
+        .write();
     }
   }
 
   query(id) {
-    return db.get('devices.' + id).value()
+    return db.get("devices." + id).value();
   }
 
   removeMessage(deviceId, messageId) {
-    return db.get(`devices[${deviceId}]`).remove({id: messageId}).write()
+    return db.get(`devices[${deviceId}]`).remove({ id: messageId }).write();
   }
 }
 
