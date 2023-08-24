@@ -30,7 +30,7 @@ class MessageController extends Controller {
   receive() {
     const { CoreApp } = EE;
 
-    const body = CoreApp.request.body;
+    const body = JSON.parse(CoreApp.request.body);
 
     Services.get("message").saveMessage(body);
 
@@ -55,10 +55,11 @@ class MessageController extends Controller {
       };
       const options = {
         method: "POST",
-        data,
+        data: JSON.stringify(data),
         dataType: "json",
         timeout: 5000,
       };
+
       await this.hc.request(url, options);
 
       Services.get("message").saveMessage({
