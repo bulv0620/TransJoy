@@ -30,7 +30,11 @@ class MessageController extends Controller {
   receive() {
     const { CoreApp } = EE;
 
-    const body = JSON.parse(CoreApp.request.body);
+    const body = CoreApp.request.body;
+
+    if (content.type === "file") {
+      body.content = JSON.parse(body.content);
+    }
 
     Services.get("message").saveMessage(body);
 
@@ -50,12 +54,12 @@ class MessageController extends Controller {
         id: v4(),
         deviceId: userInfo.id,
         type,
-        content,
+        content: content.type === "msg" ? content : JSON.stringify(content),
         timestamp: dayjs().format("YYYY-MM-DD HH:mm"),
       };
       const options = {
         method: "POST",
-        data: JSON.stringify(data),
+        data,
         dataType: "json",
         timeout: 5000,
       };
@@ -91,9 +95,9 @@ class MessageController extends Controller {
     return createReadStream;
   }
 
-  remove({deviceId, messageId}) {
-    Services.get("message").removeMessage(deviceId, messageId)
-    return 
+  remove({ deviceId, messageId }) {
+    Services.get("message").removeMessage(deviceId, messageId);
+    return;
   }
 }
 
