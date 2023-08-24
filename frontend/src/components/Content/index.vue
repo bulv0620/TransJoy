@@ -137,6 +137,48 @@ function handleUploadFile() {
   fileInput.click();
 }
 
+function downloadFileFromUrl(url, content, onComplete) {
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", url, true);
+  xhr.responseType = "blob";
+  xhr.onprogress = function updateProgress(event) {
+    if (event.lengthComputable) {
+      const percentComplete = (event.loaded / event.total) * 100;
+      content.rate = `${parseInt(percentComplete)}%`;
+    }
+  };
+
+  xhr.onload = function () {
+    if (xhr.status === 200) {
+      const blob = xhr.response;
+
+      content.rate = "";
+      onComplete(blob);
+    } else {
+      console.error("fail: ", xhr.status);
+    }
+  };
+
+  xhr.onerror = function () {
+    console.error("fail");
+  };
+
+  xhr.send();
+}
+
+function handleDownload(content) {
+  if (content.rate) return;
+  const url = `http://${activeDevice.value.ip}:${activeDevice.value.port}/controller/message/download?path=${content.filePath}&name=${content.fileName}&size=${content.fileSize}&type=${content.fileType}`;
+  downloadFileFromUrl(url, content, function (blob) {
+    console.log("success");
+
+    const downloadLink = document.createElement("a");
+    downloadLink.href = URL.createObjectURL(blob);
+    downloadLink.download = content.fileName;
+    downloadLink.click();
+  });
+}
+
 // remove message
 
 const removeLoading = ref(false);
@@ -204,7 +246,13 @@ async function handleRemoveMessage(deviceId, messageId) {
                 <n-image
                   v-if="isImg(msg.content.fileName)"
                   class="align-middle"
-                  :src="`http://${msg.self ? 'localhost' : activeDevice.ip}:${activeDevice.port}/controller/message/download?path=${msg.content.filePath}&name=${msg.content.fileName}&size=${msg.content.fileSize}&type=${msg.content.fileType}`"
+                  :src="`http://${msg.self ? 'localhost' : activeDevice.ip}:${
+                    activeDevice.port
+                  }/controller/message/download?path=${
+                    msg.content.filePath
+                  }&name=${msg.content.fileName}&size=${
+                    msg.content.fileSize
+                  }&type=${msg.content.fileType}`"
                   style="max-width: 300px"
                   @load="scrollToBottom"
                 ></n-image>
@@ -215,7 +263,13 @@ async function handleRemoveMessage(deviceId, messageId) {
                   @loadeddata="scrollToBottom"
                 >
                   <source
-                    :src="`http://${msg.self ? 'localhost' : activeDevice.ip}:${activeDevice.port}/controller/message/download?path=${msg.content.filePath}&name=${msg.content.fileName}&size=${msg.content.fileSize}&type=${msg.content.fileType}`"
+                    :src="`http://${msg.self ? 'localhost' : activeDevice.ip}:${
+                      activeDevice.port
+                    }/controller/message/download?path=${
+                      msg.content.filePath
+                    }&name=${msg.content.fileName}&size=${
+                      msg.content.fileSize
+                    }&type=${msg.content.fileType}`"
                     :type="msg.content.fileType"
                   />
                 </video>
@@ -239,14 +293,24 @@ async function handleRemoveMessage(deviceId, messageId) {
                 <n-icon class="ml-2 cursor-pointer">
                   <CopyOutline />
                 </n-icon>
-                <n-icon class="ml-2 cursor-pointer" v-if="msg.type === 'file'">
-                  <CloudDownloadOutline />
-                </n-icon>
+
                 <n-icon
                   class="ml-2 cursor-pointer"
                   @click="handleRemoveMessage(activeDevice.id, msg.id)"
                 >
                   <TrashOutline />
+                </n-icon>
+
+                <n-icon
+                  class="ml-2"
+                  :class="{ 'cursor-pointer': !msg.content.rate }"
+                  v-if="msg.type === 'file' && !msg.self"
+                  @click="handleDownload(msg.content)"
+                >
+                  <CloudDownloadOutline v-if="!msg.content.rate" />
+                  <span v-else style="font-size: 12px">{{
+                    msg.content.rate
+                  }}</span>
                 </n-icon>
               </p>
             </div>
