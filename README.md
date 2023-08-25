@@ -14,13 +14,6 @@
 
 <br>
 
-> EE框架地址：
->
-> - 🍰 **gitee：** https://gitee.com/dromara/electron-egg 
-> - 🍨 **github：** https://github.com/dromara/electron-egg 
-
-
-
 ## 📦 特性
 
 - 🍄 **跨平台**：基于EE框架打造，可以打包成windows版、Mac版、Linux版
@@ -39,4 +32,13 @@
 ## 📒 开始使用
 
 - [前往下载](https://github.com/bulv0620/TransJoy/releases)
+
+
+
+> EE框架地址：
+>
+> - 🍰 **gitee：** https://gitee.com/dromara/electron-egg 
+> - 🍨 **github：** https://github.com/dromara/electron-egg 
+
+
 
