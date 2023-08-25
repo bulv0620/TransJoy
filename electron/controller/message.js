@@ -85,7 +85,13 @@ class MessageController extends Controller {
     const ctx = CoreApp.request.ctx;
 
     const createReadStream = fs.createReadStream(path.resolve(params.path));
-    ctx.set("Content-disposition", "attachment; filename=" + params.name);
+
+    createReadStream.on('end', () => {
+      createReadStream.close();
+    });
+
+    ctx.set("Accept-Ranges", "bytes")
+    ctx.set("Content-disposition", "attachment");
     ctx.set("Content-type", params.type);
     ctx.set("Content-Length", params.size);
     return createReadStream;

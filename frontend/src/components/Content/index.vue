@@ -17,15 +17,17 @@ const dialog = useDialog();
 const message = useMessage();
 
 const activeDevice = ref(null);
-
+const userState = ref(null);
 const msgList = ref([]);
 
 onMounted(() => {
-  mitt.on("updateActiveDevice", async (device) => {
+  mitt.on("updateActiveDevice", async ({ device, user }) => {
     if (JSON.stringify(device) !== "{}") {
       msgList.value = [];
 
       activeDevice.value = device;
+
+      userState.value = user;
 
       await getMessages(device);
     } else {
@@ -155,12 +157,12 @@ function downloadFileFromUrl(url, content, onComplete) {
       content.rate = "";
       onComplete(blob);
     } else {
-      console.error("fail: ", xhr.status);
+      message.error("fail: ", xhr.status);
     }
   };
 
   xhr.onerror = function () {
-    console.error("fail");
+    message.error("fail");
   };
 
   xhr.send();
@@ -170,13 +172,44 @@ function handleDownload(content) {
   if (content.rate) return;
   const url = `http://${activeDevice.value.ip}:${activeDevice.value.port}/controller/message/download?path=${content.filePath}&name=${content.fileName}&size=${content.fileSize}&type=${content.fileType}`;
   downloadFileFromUrl(url, content, function (blob) {
-    console.log("success");
-
     const downloadLink = document.createElement("a");
     downloadLink.href = URL.createObjectURL(blob);
     downloadLink.download = content.fileName;
     downloadLink.click();
   });
+}
+
+function getUrl(msg) {
+  if (!msg.self) {
+    return `http://${activeDevice.value.ip}:${activeDevice.value.port}/controller/message/download?path=${msg.content.filePath}&name=${msg.content.fileName}&size=${msg.content.fileSize}&type=${msg.content.fileType}`;
+  } else {
+    return `http://localhost:${userState.value.port}/controller/message/download?path=${msg.content.filePath}&name=${msg.content.fileName}&size=${msg.content.fileSize}&type=${msg.content.fileType}`;
+  }
+}
+
+function handleCopyUrl(msg) {
+  if (msg.type === "msg") {
+    copyToClipboard(msg.content);
+  } else {
+    if (msg.self) {
+      copyToClipboard(msg.content.filePath);
+    } else {
+      const url = `http://${activeDevice.value.ip}:${activeDevice.value.port}/controller/message/download?path=${msg.content.filePath}&name=${msg.content.fileName}&size=${msg.content.fileSize}&type=${msg.content.fileType}`;
+      copyToClipboard(url);
+    }
+  }
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard
+    .writeText(text)
+    .then(() => {
+      message.success("copied");
+    })
+    .catch((error) => {
+      console.error(error);
+      message.error("fail");
+    });
 }
 
 // remove message
@@ -246,13 +279,7 @@ async function handleRemoveMessage(deviceId, messageId) {
                 <n-image
                   v-if="isImg(msg.content.fileName)"
                   class="align-middle"
-                  :src="`http://${msg.self ? 'localhost' : activeDevice.ip}:${
-                    activeDevice.port
-                  }/controller/message/download?path=${
-                    msg.content.filePath
-                  }&name=${msg.content.fileName}&size=${
-                    msg.content.fileSize
-                  }&type=${msg.content.fileType}`"
+                  :src="getUrl(msg)"
                   style="max-width: 300px"
                   @load="scrollToBottom"
                 ></n-image>
@@ -262,16 +289,7 @@ async function handleRemoveMessage(deviceId, messageId) {
                   width="300"
                   @loadeddata="scrollToBottom"
                 >
-                  <source
-                    :src="`http://${msg.self ? 'localhost' : activeDevice.ip}:${
-                      activeDevice.port
-                    }/controller/message/download?path=${
-                      msg.content.filePath
-                    }&name=${msg.content.fileName}&size=${
-                      msg.content.fileSize
-                    }&type=${msg.content.fileType}`"
-                    :type="msg.content.fileType"
-                  />
+                  <source :src="getUrl(msg)" :type="msg.content.fileType" />
                 </video>
                 <div v-else class="w-40 h-40 flex justify-center items-center">
                   <div class="text-center w-full">
@@ -290,7 +308,7 @@ async function handleRemoveMessage(deviceId, messageId) {
               >
                 <span style="font-size: 12px">{{ msg.timestamp }}</span>
 
-                <n-icon class="ml-2 cursor-pointer">
+                <n-icon class="ml-2 cursor-pointer" @click="handleCopyUrl(msg)">
                   <CopyOutline />
                 </n-icon>
 

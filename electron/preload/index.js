@@ -12,5 +12,5 @@ module.exports = async () => {
   Addon.get('tray').create();
   Addon.get('security').create();
   Addon.get('awaken').create();
-  Addon.get('autoUpdater').create();
+  // Addon.get('autoUpdater').create();
 }

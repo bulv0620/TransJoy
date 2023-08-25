@@ -1,7 +1,7 @@
 {
-  "name": "ee",
-  "version": "3.6.0",
-  "description": "A fast, desktop software development framework",
+  "name": "transjoy",
+  "version": "1.0.0",
+  "description": "LAN file transfer tool",
   "main": "main.js",
   "scripts": {
     "start": "electron . ",
@@ -32,14 +32,15 @@
     "rebuild": "electron-rebuild",
     "re-sqlite": "electron-rebuild -f -w better-sqlite3"
   },
-  "repository": "https://github.com/dromara/electron-egg.git",
+  "repository": "https://github.com/bulv0620/TransJoy.git",
   "keywords": [
-    "Electron",
-    "electron-egg",
-    "ElectronEgg"
+    "transjoy",
+    "LAN",
+    "file",
+    "transfer"
   ],
-  "author": "哆啦好梦, Inc <530353222@qq.com>",
-  "license": "Apache",
+  "author": "bulv, Inc <bulv0620@163.com>",
+  "license": "MIT",
   "devDependencies": {
     "@electron/rebuild": "^3.2.13",
     "debug": "^4.3.3",

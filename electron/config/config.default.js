@@ -45,7 +45,7 @@ module.exports = (appInfo) => {
    * 主窗口
    */
   config.windowsOption = {
-    title: 'EE框架',
+    title: 'transjoy',
     width: 800,
     height: 620,
     minWidth: 800,
@@ -164,7 +164,7 @@ module.exports = (appInfo) => {
     },
     tray: {
       enable: true,
-      title: 'EE程序',
+      title: 'transjoy',
       icon: '/public/images/tray.png'
     },
     security: {
@@ -176,7 +176,7 @@ module.exports = (appInfo) => {
       args: []
     },
     autoUpdater: {
-      enable: true,
+      enable: false,
       windows: false, 
       macOS: false, 
       linux: false,
@@ -188,10 +188,6 @@ module.exports = (appInfo) => {
     },
     javaServer: {
       enable: false,
-      port: 18080,
-      jreVersion: 'jre1.8.0_201',
-      opt: '-server -Xms512M -Xmx512M -Xss512k -Dspring.profiles.active=prod -Dserver.port=${port} -Dlogging.file.path="${path}" ',
-      name: 'java-app.jar'
     }
   };
 

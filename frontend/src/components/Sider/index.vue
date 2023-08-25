@@ -26,7 +26,10 @@ const activeDevice = computed(() => {
 });
 
 watch(activeDevice, () => {
-  mitt.emit("updateActiveDevice", {...activeDevice.value});
+  mitt.emit("updateActiveDevice", {
+    device: { ...activeDevice.value },
+    user: { ...userState.value },
+  });
 });
 
 onMounted(async () => {
@@ -52,7 +55,7 @@ async function subscribeDeviceServe() {
 }
 
 function handleDeviceClick(index) {
-  devices.value[index].count = 0
+  devices.value[index].count = 0;
   if (devices.value[index].active) {
     devices.value[index].active = false;
   } else {
@@ -83,10 +86,10 @@ onMounted(async () => {
   ipc.removeAllListeners(ipcApiRoute.subscribeMessageServe);
   ipc.on(ipcApiRoute.subscribeMessageServe, (_, result) => {
     if (result) {
-      if(activeDevice.value?.id === result.deviceId) {
+      if (activeDevice.value?.id === result.deviceId) {
         // push to content
         mitt.emit("newMessage", result);
-        return 
+        return;
       }
 
       const sourceDevice = devices.value.find(

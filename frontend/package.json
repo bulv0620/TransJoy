@@ -1,5 +1,5 @@
 {
-  "name": "ee",
+  "name": "transjoy",
   "version": "1.0.0",
   "scripts": {
     "dev": "vite --host --port 8080",
