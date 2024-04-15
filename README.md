@@ -5,7 +5,7 @@
 <div align=center>
 <img src="https://wallace5303.gitee.io/ee/images/electron-egg/logo.png" width="130" height="130" />
   &nbsp;  &nbsp;
-<img src="https://bulv0620.github.io/TransJoy/logo.png" width="130" height="130" />
+<img src="https://github.com/bulv0620/TransJoy/blob/main/docs/logo.png" width="130" height="130" />
 </div>
 
 <div align=center>
@@ -25,9 +25,9 @@
 
 ## 📚 使用手册
 
-![diagram1](https://bulv0620.github.io/TransJoy/diagram1.png)
+![diagram1](https://github.com/bulv0620/TransJoy/blob/main/docs/diagram1.png)
 
-![diagram2](https://bulv0620.github.io/TransJoy/diagram2.png)
+![diagram2](https://github.com/bulv0620/TransJoy/blob/main/docs/diagram2.png)
 
 ## 📒 开始使用
 
