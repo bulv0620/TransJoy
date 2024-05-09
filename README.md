@@ -1,4 +1,4 @@
-![image](https://github.com/bulv0620/TransJoy/assets/68371069/eda6b4ca-65ca-4b09-a524-47d6cf5f5fc0)# 传乐-TransJoy
+# 传乐-TransJoy
 
 <br>
 
