@@ -1,9 +1,9 @@
-# 传乐-TransJoy
+![image](https://github.com/bulv0620/TransJoy/assets/68371069/eda6b4ca-65ca-4b09-a524-47d6cf5f5fc0)# 传乐-TransJoy
 
 <br>
 
 <div align=center>
-<img src="https://wallace5303.gitee.io/ee/images/electron-egg/logo.png" width="130" height="130" />
+<img src="https://www.kaka996.com/img/logo.png" width="130" height="130" />
   &nbsp;  &nbsp;
 <img src="https://github.com/bulv0620/TransJoy/blob/main/docs/logo.png" width="130" height="130" />
 </div>
