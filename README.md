@@ -9,7 +9,7 @@
 </div>
 
 <div align=center>
-<h3><strong>🎈基于EE框架打造 全新一代局域网P2P通讯软件</strong></h3>
+<h3><strong>🎈基于EE框架打造 局域网P2P通讯软件</strong></h3>
 </div>
 
 <br>
